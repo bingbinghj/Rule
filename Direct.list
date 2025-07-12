@@ -591,3 +591,11 @@ DOMAIN-SUFFIX,iconfont.cn
 
 #gofile
 DOMAIN-SUFFIX,gofile.io
+
+#bagevm
+DOMAIN-SUFFIX,bagevm.com
+
+#IP
+DOMAIN-SUFFIX,ipapi.co
+DOMAIN-SUFFIX,ip.sb
+DOMAIN-SUFFIX,ip-api.com
