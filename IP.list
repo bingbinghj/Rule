@@ -11,3 +11,8 @@ DOMAIN-SUFFIX,hostinger.com
 DOMAIN-SUFFIX,ahrefs.com
 
 DOMAIN-SUFFIX,api.vore.top
+
+#IPv6
+DOMAIN-SUFFIX,test-ipv6.com
+DOMAIN-SUFFIX,www.test-ipv6.com
+DOMAIN-SUFFIX,testipv6.cn
