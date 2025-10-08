@@ -1,7 +1,7 @@
 /**
  * 更新日期：2025-10-08
  * 适配：Sub-Store 后端 >= 2.14.88
- * 功能：批量修改节点 server 与 port
+ * 功能：批量修改节点 server 与 port，同时保持显示名称不加 [server:port]
  * 示例参数：
  *   #server=new.example.com&port=443
  *   #server=new.example.com&port=8443&filter=dmit
@@ -26,9 +26,15 @@ function operator(proxies, targetPlatform, context) {
     if (shouldModify) {
       proxy.server = NEW_SERVER;
       proxy.port = NEW_PORT;
-      //proxy.name = `${proxy.name} [${NEW_SERVER}:${NEW_PORT}]`;
+
+      // 使用 _subDisplayName 覆盖显示名称，防止前端自动添加 [server:port]
+      if (!proxy._subDisplayName) {
+        proxy._subDisplayName = proxy.name;
+      }
+
       modified++;
     }
+
     return proxy;
   });
 
