@@ -26,7 +26,7 @@ function operator(proxies, targetPlatform, context) {
     if (shouldModify) {
       proxy.server = NEW_SERVER;
       proxy.port = NEW_PORT;
-      proxy.name = `${proxy.name} [${NEW_SERVER}:${NEW_PORT}]`;
+      //proxy.name = `${proxy.name} [${NEW_SERVER}:${NEW_PORT}]`;
       modified++;
     }
     return proxy;
