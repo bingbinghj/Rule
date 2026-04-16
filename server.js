@@ -7,37 +7,35 @@
 const inArg = $arguments;
 const NEW_SERVER = inArg.server || 'example.com';
 const NEW_PORT = Number(inArg.port || 443);
-const FILTER_KEY = inArg.filter || '';      // 匹配旧节点的关键词
-const NEW_NAME_PREFIX = inArg.newname || ''; // 替换后的新名字前缀
+const FILTER_KEY = inArg.filter || '';      
+const NEW_NAME_PREFIX = inArg.newname || ''; 
 const DEBUG = inArg.debug === 'true';
 
 function operator(proxies, targetPlatform, context) {
   let modified = 0;
 
   proxies = proxies.map(proxy => {
-    // 1. 判定是否需要修改（基于原始名称）
+    // 1. 判定是否需要修改
     const shouldModify =
       !FILTER_KEY ||
       (proxy.name && proxy.name.includes(FILTER_KEY)) ||
       (proxy._subName && proxy._subName.includes(FILTER_KEY));
 
     if (shouldModify) {
-      // 2. 替换核心连接参数
+      // 2. 替换连接参数
       proxy.server = NEW_SERVER;
       proxy.port = NEW_PORT;
 
       // 3. 处理显示名称
-      // 如果提供了 newname 参数，则使用新名字；否则尝试清除旧名字里的流量后缀
-      let baseName = NEW_NAME_PREFIX || (proxy.name ? proxy.name.split('-')[0] : 'Node');
+      // 提取前缀：如果 originalName 是 "Bage US-dwp6yd5m-4.00TB📊..."
+      // split('-')[0] 会得到 "Bage US"
+      let originalName = proxy.name || '';
+      let baseName = NEW_NAME_PREFIX || originalName.split('-')[0];
       
-      // 重要：直接修改 proxy.name 而不使用 _subDisplayName
-      // 这样 Sub-Store 发现没有 _subDisplayName 时，会自动把新后端的流量标签挂在 proxy.name 后面
+      // 核心改动：统一 proxy.name 和 _subDisplayName
+      // 去掉所有可能干扰的旧后缀
       proxy.name = baseName.trim();
-      
-      // 清除可能存在的旧显示名称缓存，强制 Sub-Store 重新生成
-      if (proxy._subDisplayName) {
-        delete proxy._subDisplayName;
-      }
+      proxy._subDisplayName = baseName.trim();
 
       modified++;
     }
@@ -46,7 +44,7 @@ function operator(proxies, targetPlatform, context) {
   });
 
   if (DEBUG) {
-    console.log(`✅ 修改完成: ${modified} 个节点。新地址: ${NEW_SERVER}:${NEW_PORT}`);
+    console.log(`✅ 已修改 ${modified} 个节点。`);
   }
 
   return proxies;
