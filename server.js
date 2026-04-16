@@ -1,46 +1,45 @@
 /**
  * 更新日期：2025-10-08
- * 适配：Sub-Store 后端 >= 2.14.88
- * 功能：批量修改节点 server 与 port，同时保持显示名称不加 [server:port]
+ * 功能：批量修改 server/port，并根据参数手动设置节点名前缀
  * 示例参数：
- *   #server=new.example.com&port=443
- *   #server=new.example.com&port=8443&filter=dmit
+ * #server=example.com&port=1145&prefixexample -&filter=example
  */
 
 const inArg = $arguments;
 const NEW_SERVER = inArg.server || 'example.com';
 const NEW_PORT = Number(inArg.port || 443);
-const FILTER_KEY = inArg.filter || '';  // 可选，仅修改含指定关键词的节点名
+const NEW_PREFIX = inArg.prefix || ''; // 从参数获取前缀，例如 "example"
+const FILTER_KEY = inArg.filter || ''; 
 const DEBUG = inArg.debug === 'true';
 
-// 主操作逻辑
-function operator(proxies, targetPlatform, context) {
+function operator(proxies) {
   let modified = 0;
 
-  proxies = proxies.map(proxy => {
-    const shouldModify =
-      !FILTER_KEY ||
-      (proxy.name && proxy.name.includes(FILTER_KEY)) ||
-      (proxy._subName && proxy._subName.includes(FILTER_KEY));
+  return proxies.map(proxy => {
+    const originalName = proxy.name || "";
+    
+    // 检查是否符合过滤条件
+    const shouldModify = !FILTER_KEY || originalName.includes(FILTER_KEY);
 
     if (shouldModify) {
       proxy.server = NEW_SERVER;
       proxy.port = NEW_PORT;
 
-      // 使用 _subDisplayName 覆盖显示名称，防止前端自动添加 [server:port]
-      if (!proxy._subDisplayName) {
-        proxy._subDisplayName = proxy.name;
-      }
+      // --- 动态重命名逻辑 ---
+      // 提取原名中的流量和时间信息：匹配从数字开始到结尾的部分
+      const statsMatch = originalName.match(/(\d+(?:\.\d+)?(?:GB|TB|MB|KB)[\s\S]+)/i);
+      const statsInfo = statsMatch ? statsMatch[1].trim() : originalName;
+
+      // 拼接：[手动输入的前缀] + [提取的流量时间信息]
+      // 如果没有传 prefix 参数，则保持原样
+      const newName = NEW_PREFIX ? `${NEW_PREFIX} ${statsInfo}` : originalName;
+      
+      proxy.name = newName;
+      proxy._subDisplayName = newName;
 
       modified++;
     }
 
     return proxy;
   });
-
-  if (DEBUG) {
-    console.log(`✅ 已修改 ${modified} 个节点 (server=${NEW_SERVER}, port=${NEW_PORT})`);
-  }
-
-  return proxies;
 }
