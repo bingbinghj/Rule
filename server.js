@@ -2,7 +2,7 @@
  * 更新日期：2026-04-16
  * 功能：批量修改 server/port，并将节点名完全替换为手动填写的 prefix
  * 示例参数：
- * #server=dmit.chihui.de&port=29368&prefix=DMIT US - Bage US&filter=Bage
+ * #server=example.com&port=11451&prefix=example&filter=example
  */
 
 const inArg = $arguments;
