@@ -594,3 +594,6 @@ DOMAIN-SUFFIX,gofile.io
 
 #bagevm
 DOMAIN-SUFFIX,bagevm.com
+
+#agentrouter
+DOMAIN-SUFFIX,agentrouter.org
