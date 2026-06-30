@@ -597,3 +597,6 @@ DOMAIN-SUFFIX,bagevm.com
 
 #agentrouter
 DOMAIN-SUFFIX,agentrouter.org
+
+#微软积分
+DOMAIN-SUFFIX,rewards.bing.com
